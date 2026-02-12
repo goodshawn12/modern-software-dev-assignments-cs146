@@ -8,7 +8,7 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """You are an expert mathematician. """
 
 
 USER_PROMPT = """
@@ -56,6 +56,7 @@ def test_your_prompt(system_prompt: str) -> bool:
             options={"temperature": 0.3},
         )
         output_text = response.message.content
+        print(output_text)
         final_answer = extract_final_answer(output_text)
         if final_answer.strip() == EXPECTED_OUTPUT.strip():
             print("SUCCESS")
