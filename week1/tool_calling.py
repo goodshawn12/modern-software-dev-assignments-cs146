@@ -70,7 +70,13 @@ TOOL_REGISTRY: Dict[str, Callable[..., str]] = {
 # ==========================
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT =  """You are a tool-calling engine. 
+Available tools:
+- output_every_func_return_type: Analyzes a python file and returns function return types.
+When the user says "Call the tool now.", you MUST respond with a single JSON object and NO OTHER TEXT.
+Format:
+{"tool": "output_every_func_return_type"}
+"""
 
 
 def resolve_path(p: str) -> str:
@@ -109,6 +115,7 @@ def run_model_for_tool_call(system_prompt: str) -> Dict[str, Any]:
         options={"temperature": 0.3},
     )
     content = response.message.content
+    print(content)
     return extract_tool_call(content)
 
 
@@ -166,3 +173,4 @@ def test_your_prompt(system_prompt: str) -> bool:
 
 if __name__ == "__main__":
     test_your_prompt(YOUR_SYSTEM_PROMPT)
+    print(TOOL_REGISTRY)
