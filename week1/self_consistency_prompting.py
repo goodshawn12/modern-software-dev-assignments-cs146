@@ -9,7 +9,7 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in! Try to get as close to 100% correctness across all runs as possible.
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = "You will be given a math problem. Solve the problem and output the final answer on the last line as 'Answer: <number>'."
 
 USER_PROMPT = """
 Solve this problem, then give the final answer on the last line as "Answer: <number>".
@@ -56,6 +56,7 @@ def test_your_prompt(system_prompt: str) -> bool:
             options={"temperature": 1},
         )
         output_text = response.message.content
+        print(output_text)
         final_answer = extract_final_answer(output_text)
         print(f"Run {idx + 1} answer: {final_answer}")
         answers.append(final_answer.strip())
