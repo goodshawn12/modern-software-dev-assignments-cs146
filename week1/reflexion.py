@@ -15,7 +15,11 @@ Keep the implementation minimal.
 """
 
 # TODO: Fill this in!
-YOUR_REFLEXION_PROMPT = ""
+YOUR_REFLEXION_PROMPT = """
+For each failed test, analyze why the previous code failed the test cases.
+Then, write a clear, corrected requirements for the next implementation.
+Finally, based on the updated instructions and requirements, write a corrected implementation.
+"""
 
 
 # Ground-truth test suite used to evaluate generated code
@@ -96,7 +100,9 @@ def your_build_reflexion_context(prev_code: str, failures: List[str]) -> str:
 
     Return a string that will be sent as the user content alongside the reflexion system prompt.
     """
-    return ""
+    return f"""You previously generated this code: {prev_code}
+It failed the following tests: {failures}. 
+"""
 
 
 def apply_reflexion(
