@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import os
 import re
-from typing import List
 import json
-from typing import Any
+from typing import Any, List
 from ollama import chat
+from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
+
+class ActionItemsResponse(BaseModel):
+    action_items: List[str]
 
 BULLET_PREFIX_PATTERN = re.compile(r"^\s*([-*•]|\d+\.)\s+")
 KEYWORD_PREFIXES = (
@@ -87,3 +90,37 @@ def _looks_imperative(sentence: str) -> bool:
         "investigate",
     }
     return first.lower() in imperative_starters
+
+
+def extract_action_items_llm(text: str) -> List[str]:
+    """
+    Extracts action items from the given text using an LLM (Ollama).
+    Uses structured output to ensure a clean list of strings is returned.
+    """
+    
+    prompt = f"""
+    Extract all actionable tasks and to-do items from the following text. 
+    Focus on specific, clear instructions or commitments.
+    Return only the action items.
+
+    Text:
+    {text}
+    """
+    
+    try:
+        response = chat(
+            model="llama3.1:8b",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that extracts action items from notes. You must return a JSON object with a key 'action_items' containing a list of strings."},
+                {"role": "user", "content": prompt},
+            ],
+            format=ActionItemsResponse.model_json_schema(),
+        )
+        print(ActionItemsResponse.model_json_schema())
+        # Parse the structured response
+        data = ActionItemsResponse.model_validate_json(response.message.content)
+        return data.action_items
+    except Exception as e:
+        # Fallback or log error (for now just returning empty or print for visibility in development)
+        print(f"Error calling Ollama: {e}")
+        return []
